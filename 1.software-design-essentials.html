@@ -23,6 +23,16 @@
 - 7-8 sessions
 - do/ not do
 </script></section><section  data-markdown><script type="text/template">
+![](images/door-1-a.png)
+</script></section><section  data-markdown><script type="text/template">
+
+![](images/door-1-b.png)
+</script></section><section  data-markdown><script type="text/template">
+
+![](images/door-1-c.png)
+</script></section><section  data-markdown><script type="text/template">
+![](images/door-2.png)
+</script></section><section  data-markdown><script type="text/template">
 
 ![](images/book_mythical_man_month.jpg)
 </script></section><section  data-markdown><script type="text/template">
@@ -52,11 +62,12 @@ Customer’s choices:
 - acquire more 1401s. 
 </script></section><section  data-markdown><script type="text/template">
 
-![](https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/IBM_System360_Model_30.jpg/330px-IBM_System360_Model_30.jpg)
-</script></section><section  data-markdown><script type="text/template">
+
 - The IBM System/360 (S/360) is a family of mainframe computer systems that was announced by IBM on April 7, 1964, and delivered between 1965 and 1978. 
 - The first family of computers designed to cover the complete range of applications, from small to large, both commercial and scientific.
 - allowing customers to purchase a smaller system with the knowledge they would always be able to migrate upward if their needs grew, without reprogramming of application software or replacing peripheral devices. 
+</script></section><section  data-markdown><script type="text/template">
+![360](https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/IBM_System360_Model_30.jpg/330px-IBM_System360_Model_30.jpg)
 </script></section><section  data-markdown><script type="text/template">
 - Chief architect: Gene Amdahl
 - Project manager: Fred Brooks
@@ -141,8 +152,8 @@ There is no single development, in either **technology** or **management techniq
 
 - Essense: complex concept structure
 
-- Accident: present these abstract entity using a programming language
-</script></section><section  data-markdown><script type="text/template">natural attributes
+- Accident: present these abstract entities using a programming language
+</script></section><section  data-markdown><script type="text/template">natural attributes of concept structure
 - complexity
   - no 2 parts are alike
   - very large number of status
@@ -202,8 +213,8 @@ graph TD
     B --->|form| D[ability]
     B --->|present as|E[symbol]
 ```
-</script></section><section  data-markdown><script type="text/template">
-![concept](images/concept.svg)
+
+
 </script></section><section  data-markdown><script type="text/template">
 ![concept](images/conceptual.png)
 
@@ -227,19 +238,28 @@ The concepts, and especially the model's different elements (entities, relations
 - a logical flaw that will at one time or the other will:
   - Cause a bug (usually a few), such as a little piece of functionality that doesn't work well, or a serious one
   - Cause the solution to be a non-solution – that is, it doesn't match the problem domain 
-</script></section><section  data-markdown><script type="text/template">
-![](images/door-1.png)
-</script></section><section  data-markdown><script type="text/template">
-![](images/door-2.png)
+
+
 </script></section><section  data-markdown><script type="text/template">
 # Conceptual Integrity
 
 ## Propriety
 a software system should have just the functions essential to its purpose and no more
+- complete
+- simple
 ## Orthogonality
 individual functions should be independent of one another
 ## Generality
 a single function should be usable in many ways
+
+ Blaauw and I have elsewhere discussed conceptual integrity at some length, identifying as component principles orthogonality, propriety, and generality. 
+ the design of design
+</script></section><section  data-markdown><script type="text/template">
+# Wrapper up
+
+- Software complexity
+- Design concept
+- Conceptual integrity
 </script></section><section  data-markdown><script type="text/template">
 </script></section></div>
     </div>
@@ -287,6 +307,8 @@ a single function should be usable in many ways
       var options = extend(defaultOptions, {}, queryOptions);
     </script>
 
+    <script src="./_assets/lib/mermaid.min.js"></script>
+    <script src="./_assets/lib/reveal-mermaid.js"></script>
 
     <script>
       Reveal.initialize(options);
