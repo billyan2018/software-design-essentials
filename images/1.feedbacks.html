@@ -1,0 +1,90 @@
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <title>reveal-md</title>
+    <link rel="shortcut icon" href=".\../favicon.ico"/>
+    <link rel="stylesheet" href=".\../dist/reveal.css" />
+    <link rel="stylesheet" href=".\../dist/theme/black.css" id="theme" />
+    <link rel="stylesheet" href=".\../css/highlight/zenburn.css" />
+
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides"><section  data-markdown><script type="text/template">
+
+## James
+
+在最开始做design的时候, 最痛苦的阶段就是从developer思维向designer思维的转变. 我相信大多数designer也都经历过”照着代码写design”的阶段.
+
+随着做design越来越多, 这种痛苦也逐渐转变成了乐趣. 
+
+我觉得design相比development来说，是一种更纯粹的思考. 不光是designer需要这种思考，developer其实需要在写代码之前也需要在脑海里对自己要做的东西有一个轮廓, 而这个轮廓在我看来就是一个draft版本的design, 只不过没有通过文档的形式写出来, 而developer是通过coding -> test -> coding -> test这种迭代的方式来验证自己的想法的完整性的. 而对designer来说，这一过程是在脑海里完成的, 所以对于designer来说这种脑补的能力(Nate叔的叫法)或者抽象思维的能力(毕老师的叫法)是非常重要的. 这个能力我觉得也是做为一个designer的标志之一. 
+
+感谢Bill组织的这一系列分享.
+
+## Maco
+听完今天的分享最大的感触就是找到了一些写设计时思考的方向。一开始做设计觉得只是在推演代码，但是随着经验的加深，越来越觉感受到了它其他的重要性。
+如何将一些潜在的问题扼杀的摇篮里， 如何避免rework，在设计阶段，这些问题远比代码实现本身要重要。我之前也研读过一些设计文档，好的design确实可以牢牢抓住主要矛盾点，然后围绕它去展开
+一些具体描述，这样可以保证代码实现不会出现大的偏离，并且使读者能够清晰意识到这次实现的目的。
+所谓道，可道，非常道。所有真理都不是别人告诉我们的，需要我们在实践中不断地体会。感谢公司，感谢Bill和Nate， 给我们指明了一个清晰的学习方向 ！
+
+</script></section></div>
+    </div>
+
+    <script src=".\../dist/reveal.js"></script>
+
+    <script src=".\../plugin/markdown/markdown.js"></script>
+    <script src=".\../plugin/highlight/highlight.js"></script>
+    <script src=".\../plugin/zoom/zoom.js"></script>
+    <script src=".\../plugin/notes/notes.js"></script>
+    <script src=".\../plugin/math/math.js"></script>
+    <script src=".\../plugin/mermaid/mermaid.min.js"></script>
+    <script src=".\../plugin/mermaid/reveal-mermaid.js"></script>
+    <script src=".\../plugin/mindmap/d3.min.js"></script>
+    <script src=".\../plugin/mindmap/markmap-view.js"></script>
+    <script src=".\../plugin/mindmap/markmap-lib.js"></script>
+    <script src=".\../plugin/mindmap/reveal-mindmap.js"></script>
+    <script>
+      function extend() {
+        var target = {};
+        for (var i = 0; i < arguments.length; i++) {
+          var source = arguments[i];
+          for (var key in source) {
+            if (source.hasOwnProperty(key)) {
+              target[key] = source[key];
+            }
+          }
+        }
+        return target;
+      }
+
+      // default options to init reveal.js
+      var defaultOptions = {
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+        transition: 'default', // none/fade/slide/convex/concave/zoom
+        plugins: [
+          RevealMarkdown,
+          RevealHighlight,
+          RevealZoom,
+          RevealNotes,
+          RevealMath
+        ]
+      };
+
+      // options from URL query string
+      var queryOptions = Reveal().getQueryHash() || {};
+
+      var options = extend(defaultOptions, {}, queryOptions);
+    </script>
+
+
+    <script>
+      Reveal.initialize(options);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,249 @@
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <title>reveal-md</title>
+    <link rel="shortcut icon" href="./favicon.ico"/>
+    <link rel="stylesheet" href="./dist/reveal.css" />
+    <link rel="stylesheet" href="./dist/theme/black.css" id="theme" />
+    <link rel="stylesheet" href="./css/highlight/zenburn.css" />
+
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides"><section  data-markdown><script type="text/template">![Heathrow Terminal 5 Opening](./images/heathrow.jpg)
+
+</script></section><section  data-markdown><script type="text/template">
+Just before the opening of Heathrow’s Terminal 5, engineers tested the system thoroughly before opening the Terminal to the public with over 12,000 test pieces of luggage. It worked flawlessly on all test runs only to find on the Terminal’s opening day the system simply could not proceed. It is thought that “real life” scenarios such as removing a bag from the system manually when a passenger had left an important item in their luggage, had caused the entire system to become confused and shut down. 
+
+Over the following 10 days, 42,000 bags failed to travel with their owners, and over 500 flights were canceled.
+</script></section><section  data-markdown><script type="text/template">
+
+# Software Design Evaluation
+</script></section><section  data-markdown><script type="text/template">
+## Why We Need Design Evaluation
+- Understand **how well** the design meets the requirement
+- Understand **rationale** of the design decisions
+- Identify **risks** and points to improve
+</script></section><section  data-markdown><script type="text/template">
+## Challenges on Software Design Analysis
+- Complexity
+- Design is only a plan
+- Domain vs expertise
+- Methodology / terminology / presentation
+</script></section><section  data-markdown><script type="text/template">
+## Overview on Design Analysis Approaches
+```mindmap
+## Survey based
+## Checklist based
+## Scenario-based
+- SAAM (Software Architecture Analysis Method)
+- ATAM (Architecture Trade-off Analysis Method)
+- CBAM (Cost-Benefit Analysis Method)
+## Model based
+- HASAD
+```</script></section><section  data-markdown><script type="text/template">
+
+## Checklist design evaluation
+
+https://confluence.kingland-apps.com/display/~biyan@ksd.kingland.cc/Design+Review+Checklist
+</script></section><section  data-markdown><script type="text/template">
+
+## ATAM
+</script></section><section  data-markdown><script type="text/template">
+
+###  Core Concepts
+</script></section><section  data-markdown><script type="text/template">
+#### quality attribute characterization
+Quality attribute characterizations answer the following questions about each attribute:
+- What are the stimuli to which the architecture must respond?
+- What is the measurable or observable manifestation of the quality attribute by which its achievement is judged?
+- What are the key architectural decisions that impact achieving the attribute requirement?
+</script></section><section  data-markdown><script type="text/template">
+
+#### Scenarios
+A scenario is a short statement describing the interaction of one of the stakeholders with the system. 
+</script></section><section  data-markdown><script type="text/template">
+- user: would describe using the system to perform some task; ( use cases ) 
+- maintainer: would describe making a change to the system: upgrading the OS, adding a specific new function. 
+- developer:using the architecture to build the system or predict its performance.
+- customer: how the architecture is to be re-used for a second product
+</script></section><section  data-markdown><script type="text/template">
+#### 3 factors
+- Stimuli
+- Environment
+- Response
+
+```mermaid
+graph LR
+    s(Source of stimulus) -->|Stimulus| B(Artifact) -->|Response| r(Response measure)
+subgraph environment
+	B
+end
+```
+</script></section><section  data-markdown><script type="text/template">
+#### Scenario types
+- **Use case scenarios**
+User’s intended interaction with the completed, running system
+- **Growth scenarios**
+Typical anticipated future changes to the system
+- **Exploratory scenarios**
+Push the envelop and stress the system
+</script></section><section  data-markdown><script type="text/template">
+#### Exploratory scenarios
+- Expose the limits or boundary conditions of the current design
+- expose possible implicit assumptions
+</script></section><section  data-markdown><script type="text/template">
+1. Add a new 3-D map feature, and a virtual reality interfaces for viewing the maps in less than five man-months of effort.
+2. Change the underlying Unix platform to a Macintosh.
+3. Re-use the 25-year-old software on a new generation of aircraft.
+4. The time budget for displaying changed track data is reduced by a factor of 10.
+5. Improve the system’s availability from 98% to 99.999%.
+6. Half of the servers go down during normal operation without affecting overall system availability.
+7. Tenfold increase in the number of bids processed hourly while keeping worst-case response time below 10 seconds.
+</script></section><section  data-markdown><script type="text/template">
+
+### Utility tree
+Utility trees provide a top-down mechanism for directly and efficiently translating the business drivers of a system into concrete quality attribute scenarios. 
+</script></section><section  data-markdown><script type="text/template">
+```mindmap
+# Utility
+## Performance
+### Data latency
+- (M,L) minimize storage latency on customer DB to 200ms 
+- (H,M) Delivery video in real time
+### Transaction Throughput
+## Modifiability
+### New product
+### Change COTS
+- (L,H) add middleware with < 20 man-months
+- (H, L) change web UI < 1 man-month
+## Availability
+### Hardware failure
+- (L,H) Power outage at site 1 requires traffic re-direct to site 2 in < 3 sec
+- (M, M) Restart after failure in < 5 ms
+### COTS software failure
+## Security 
+### Data confidentiality
+- (L, H) Credit card transactions are secure 99.999% of time
+## Data integrity
+```
+</script></section><section  data-markdown><script type="text/template">
+
+### Analysis
+```mermaid
+graph TD
+A[high-priority scenarios] --> D[Analysis]
+B[Attribute-specific questions] --> D
+C[Architectural approaches] --> D
+D --> E[Sensitivity points]
+D --> F[Tradeoff points]
+D --> G[Risks]
+```
+</script></section><section  data-markdown><script type="text/template">
+
+### Process
+#### Presentation
+1. Present the ATAM. 
+2. Present business drivers. 
+3. Present architecture. 
+</script></section><section  data-markdown><script type="text/template">
+#### Investigation and Analysis
+4. Identify architectural approaches. 
+5. Generate quality attribute utility tree. 
+6. Analyze architectural approaches.
+</script></section><section  data-markdown><script type="text/template">
+
+
+
+#### Testing
+7. Brainstorm and prioritize scenarios. 
+
+8. Analyze Architectural Approaches 
+
+</script></section><section  data-markdown><script type="text/template">
+#### Reporting
+9. Present results. 
+</script></section><section  data-markdown><script type="text/template">
+![](images/atam-process.png)
+</script></section><section  data-markdown><script type="text/template">
+### ATAM
+- advantages
+structure methodology
+well accepted
+- disadvantage
+process
+</script></section><section  data-markdown><script type="text/template">
+## Thoughts behind ATAM
+- the most misunderstood and easily overlooked part: understanding the quality attribute requirements and priorities of your stakeholders
+- non functional requirement drives architecture design
+
+</script></section><section  data-markdown><script type="text/template">
+
+## Summary
+</script></section><section  data-markdown><script type="text/template">
+
+## Reference
+
+![Software Architecture in Practice](https://images-na.ssl-images-amazon.com/images/I/41CLtb7RmOL._SX336_BO1,204,203,200_.jpg)
+
+https://resources.sei.cmu.edu/asset_files/TechnicalReport/2000_005_001_13706.pdf
+https://confluence.kingland-apps.com/display/~biyan@ksd.kingland.cc/Design+Review+Checklist</script></section></div>
+    </div>
+
+    <script src="./dist/reveal.js"></script>
+
+    <script src="./plugin/markdown/markdown.js"></script>
+    <script src="./plugin/highlight/highlight.js"></script>
+    <script src="./plugin/zoom/zoom.js"></script>
+    <script src="./plugin/notes/notes.js"></script>
+    <script src="./plugin/math/math.js"></script>
+    <script src="./plugin/mermaid/mermaid.min.js"></script>
+    <script src="./plugin/mermaid/reveal-mermaid.js"></script>
+    <script src="./plugin/mindmap/d3.min.js"></script>
+    <script src="./plugin/mindmap/markmap-view.js"></script>
+    <script src="./plugin/mindmap/markmap-lib.js"></script>
+    <script src="./plugin/mindmap/reveal-mindmap.js"></script>
+    <script>
+      function extend() {
+        var target = {};
+        for (var i = 0; i < arguments.length; i++) {
+          var source = arguments[i];
+          for (var key in source) {
+            if (source.hasOwnProperty(key)) {
+              target[key] = source[key];
+            }
+          }
+        }
+        return target;
+      }
+
+      // default options to init reveal.js
+      var defaultOptions = {
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+        transition: 'default', // none/fade/slide/convex/concave/zoom
+        plugins: [
+          RevealMarkdown,
+          RevealHighlight,
+          RevealZoom,
+          RevealNotes,
+          RevealMath
+        ]
+      };
+
+      // options from URL query string
+      var queryOptions = Reveal().getQueryHash() || {};
+
+      var options = extend(defaultOptions, {}, queryOptions);
+    </script>
+
+
+    <script>
+      Reveal.initialize(options);
+    </script>
+  </body>
+</html>
