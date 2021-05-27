@@ -3,11 +3,10 @@ mermaid.initialize({
     theme: 'dark',
     logLevel: 3,
 });
-
-Reveal.addEventListener('ready', event => asyncMermaidRender(event));
-
-async function asyncMermaidRender(event) {
-    var graphs = document.getElementsByClassName("mermaid");
+console.log('mermaid plugin');
+Reveal.on('ready', event =>  {
+	console.log('asyncMermaidRender');
+    const graphs = document.getElementsByClassName("mermaid");
     graphs.forEach((item, index) => {
         let graphCode = item.innerText.trim(); //trim() becase of gantt, class and git diagram
         let mermaidDiv = document.createElement('div');
@@ -29,5 +28,5 @@ async function asyncMermaidRender(event) {
             console.log("Cannot render mermaid diagram " + index + "\n" + graphCode);
             console.log(err.message);
         }
-    })
-}
+    });
+});
