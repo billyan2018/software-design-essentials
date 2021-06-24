@@ -1,6 +1,4 @@
 
-
-console.log('mindmap plugin launched');
 const enabled = {};
 
 function transform(transformer, content) {
@@ -25,6 +23,12 @@ function hashCode(str) {
 };
 
 function fastRender(el) {
+  console.log(el.offsetParent);
+  if (el.offsetParent==null  // not visible yet
+    || el.textContent.indexOf('.mm-')>=0 // proceeded
+    ) { 
+    return;
+  }
   const { Transformer, Markmap } = window.markmap;
   const lines = el.textContent.split('\n');
   const height = lines.length * 20 + 40;
