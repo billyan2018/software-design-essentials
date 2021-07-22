@@ -1,0 +1,386 @@
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <title>reveal-md</title>
+    <link rel="shortcut icon" href="./favicon.ico"/>
+    <link rel="stylesheet" href="./dist/reveal.css" />
+    <link rel="stylesheet" href="./dist/theme/black.css" id="theme" />
+    <link rel="stylesheet" href="./css/highlight/zenburn.css" />
+
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides"><section  data-markdown><script type="text/template"># Code Quality and Connascence
+</script></section><section  data-markdown><script type="text/template">
+## What is good code
+</script></section><section  data-markdown><script type="text/template">
+## Software quality -  ISO/IEC 25010
+
+![](https://www.monterail.com/hubfs/Software%20QA%20standards%20-%20ISO%2025010.jpeg)
+</script></section><section  data-markdown><script type="text/template">
+
+## Maintainability
+will it be possible for the app to be **modified** or **improved** in the future, or will it adapt to **changes** in the environment?
+</script></section><section  data-markdown><script type="text/template">
+
+- **Modularity** = if an app is built with components, does changing one component impact other components? 
+- **Reusability** = can an asset be used in more than one system, or in building other assets?
+- **Analyzability** = is it easy to analyze any activities in the app that need to be taken into account? 
+- **Modifiability** = is the app easy to modify without harming present product quality?
+- **Testability** = can the app be tested, also automatically?
+</script></section><section  data-markdown><script type="text/template">
+Good code  = Code with good maintainability = Code easy to change (analyze, reuse, modify, test)
+</script></section><section  data-markdown><script type="text/template">
+![tech debt](images/tech-debt.png)
+</script></section><section  data-markdown><script type="text/template">
+
+
+``` mermaid
+
+flowchart
+
+subgraph value
+    Code-quality[Code Quality] --- Maintainability --- easy[Easy to change: analyze, modify, test, reuse, modularize]
+end
+
+subgraph principles
+
+    Connascences --- DRY --- SOLID  --- Info[Information hiding]
+
+end
+
+subgraph practices
+
+   smell[Code smell] --- Pattern --- Rules
+
+end
+
+value --- principles --- practices
+
+```
+</script></section><section  data-markdown><script type="text/template">
+# Connascence
+</script></section><section  data-markdown><script type="text/template">
+Connascence = a change to one element would require a change to another 
+
+Element = (classes, fields, methods,  parameters, variables, etc.)
+</script></section><section  data-markdown><script type="text/template">
+### Connascence of Name
+
+Connascence of name is when multiple components must agree on the **name** of an entity
+
+
+![](images/connascence-of-name-simple.png)
+</script></section><section  data-markdown><script type="text/template">
+![](images/con2.png)
+</script></section><section  data-markdown><script type="text/template">
+- unavoidable
+- connascence of name is the weakest connascence.
+- it also illustrates how important it is to name entities in code well
+
+</script></section><section  data-markdown><script type="text/template">
+### Connascence of Type (CoT)
+CoT means that two elements must agree on the **type**.
+
+![](images/connascence-of-type.png)
+</script></section><section  data-markdown><script type="text/template">
+### Connascence of Meaning 
+Connascence of meaning is when multiple components must agree on the meaning of **particular values**
+
+![](images/connascence-of-meaning.png)
+
+</script></section><section  data-markdown><script type="text/template">
+```python
+def find_user_in_database(username):
+    try:
+        return database.find_user(username=username) or None
+    except DatabaseError:
+        return None
+```
+
+</script></section><section  data-markdown><script type="text/template">
+- Convert to Connascence of name by moving the "magic values" to named constants or enum
+
+- Convert to Connascence of Type:
+```
+unit_cost = 49.95  //Primitive Obsession
+```
+to 
+```python
+unit_cost = Cost(49.95, 'USD')
+```
+</script></section><section  data-markdown><script type="text/template">
+### Connascence of Position
+
+Connascence of position is when multiple entities must agree on the order of values.
+
+```python
+def get_user_details():
+    # Returns a user's details as a list:
+    # first_name, last_name, year_of_birth, is_admin
+    return ["Thomas", "Richards", 1984, True]
+```
+
+```java
+ sendEmail(firstName, lastName, email, subject, body, attachments);
+```</script></section><section  data-markdown><script type="text/template">Improve:
+Use a dictionary （Connascence of Name)
+or a class (Connascence of Type) 
+
+```python
+def get_user_details():
+    return {
+        "first_name": "Thomas",
+        "last_name": "Richards",
+        "year_of_birth": 1984,
+        "is_admin": True,
+    }
+```
+</script></section><section  data-markdown><script type="text/template">
+
+### Connascence of Algorithm
+CoA occurs when two elements **view or manipulate data in the same way**. 
+where we are making use of a data structure in a specific way such that all the pieces of code which interact with that data structure need to know exactly how that data structure works in order to make use of it
+
+![](images/connascence-of-algorithm.png)
+</script></section><section  data-markdown><script type="text/template">
+```python
+def write_data_to_cache(data_string):
+    with open('/path/to/cache', 'wb') as cache_file:
+        cache_file.write(data_string.encode('utf8'))
+
+def read_data_from_cache():
+    with open('/path/to/cache', 'rb') as cache_file:
+        return cache_file.read().decode('utf8')
+```
+</script></section><section  data-markdown><script type="text/template">
+```java
+
+public class AClassWhichPutsASpecificItemInAList {
+	public List<SomeObject> createTheEvil() {
+		var myEvilList = List.of(new SomeObject("SomeSpecialName"));
+		// and so on
+		return myEvilList;
+	}
+}
+public class SomeOtherClassFarFarAway {
+	public void someMethod(List<SomeObject> someObjects) {
+		var speciallyNamedObject = someObjects.stream().filter(s-> "SomeSpecialName".equals(s.Name)).findFirst();
+        ...
+	}
+}
+```
+</script></section><section  data-markdown><script type="text/template">
+### Connascence of Execution
+two different lines of code have to be executed in a **certain order** for the program to be executed correctly.
+
+
+```java
+public void someMethod() {
+	var someObject = new SomeObject();
+    // this is a must otherwise the below line will crash
+	someObject.setProperty1(new Property1());
+	// some where else far far away
+	someOtherMethod(someObject);
+}
+
+private void someOtherMethod(SomeObject someObject) {
+	someObject.getProperty1().setAnotherProperty(new AnotherProperty());
+}
+```
+</script></section><section  data-markdown><script type="text/template">
+```java
+email = Email()
+email.setRecipient("foo@example.comp")
+email.setSender("me@mydomain.com")
+email.send()
+email.setSubject("Hello World")
+```
+</script></section><section  data-markdown><script type="text/template">
+### Connascence of Timing
+CoTi occurs when the timing (of execution) affects our code.
+
+![](images/connascence-of-timing.png)
+</script></section><section  data-markdown><script type="text/template">### Connascence of Value (CoV)
+CoV occurs when an invariant (permanent condition) states that two or more values must change simultaneously.
+
+![](images/connascence-of-value.png)
+
+</script></section><section  data-markdown><script type="text/template">
+```java
+public class Time{
+    int _hour;
+    int _minute;
+    int _second;
+    public Time(int hour, int minute, int second){
+        _hour = hour;
+        _minute = minute;
+        _second = second;
+    }
+    public string display(){
+        return _hour + “:” + _minute + “:” + _second + “:”;
+    }
+}
+```
+
+var myTime = new Time (27, 76, 82);
+</script></section><section  data-markdown><script type="text/template">### Connascence of Identity (CoI)
+The already mentioned CoI is the strongest form and occurs when the same object must be referenced at two or more locations.
+
+![](images/connascence-of-identity.png)
+
+</script></section><section  data-markdown><script type="text/template">
+```java
+public class GlobalCounter{
+    int count = 0;
+    public void increment(){
+        count++;
+    }
+    public int getCurrentCount(){
+        return count;
+    }
+}
+public class Controller{
+    GlobalCounter counter;
+    public Controller(GlobalCounter counter){
+        this.counter = counter;
+    }
+    public ActionResult home(){
+        counter.increment();
+    }
+}
+```
+</script></section><section  data-markdown><script type="text/template">
+![](images/connascence.svg)
+
+</script></section><section  data-markdown><script type="text/template">
+## Connascence Rules
+### Strength
+try to create the weakest possible connascence
+### Locality
+code that is close together may have a stronger form of connascence
+### Degree
+elements with a high degree of connectivity are more difficult to understand and change than elements with a low RoD.
+
+</script></section><section  data-markdown><script type="text/template">
+Connascence = Strength x Degree / Locality
+
+![](images/connascence-properties-diagram.png)
+
+</script></section><section  data-markdown><script type="text/template">
+![](images/co-locality.png)
+</script></section><section  data-markdown><script type="text/template">
+
+### Minimize overall connascence
+By breaking the system into encapsulated elements
+### Minimize connascence crossing encapsulation boundaries
+By maximizing the connascence within encapsulation boundaries
+
+
+</script></section><section  data-markdown><script type="text/template">![](images/loose-coupling.png)
+</script></section><section  data-markdown><script type="text/template">
+## Case 1
+```java
+public class UserDeviceInformationModel {
+
+    public static final String USER_DEVICE_STATUS_ACTIVE = "A";
+    public static final String USER_DEVICE_STATUS_INACTIVE = "I";
+   ...
+}
+
+@Service
+public class UserDeviceInformationServiceImpl implements UserDeviceInformationService {
+   ...
+    public void registerMobileDevice(UserDeviceInformationModel userDeviceInformationModel, String lastChangeUser) {
+        // set current user device information status as active
+        userDeviceInformationModel.setStatus(UserDeviceInformationModel.USER_DEVICE_STATUS_ACTIVE);
+        ...
+```
+</script></section><section  data-markdown><script type="text/template">
+
+## Case 2
+
+```java
+public class Publisher {
+    Queue<String> queue = new Queue<>();
+    public void publish(string message) {
+        queue.enqueue(message);
+    }
+}
+public class Subscriber {
+    public void consume(Publisher publisher) {
+        System.out.println(publisher.queue.dequeue());
+    }
+}
+
+```</script></section><section  data-markdown><script type="text/template">
+## References
+
+- https://silkandspinach.net/2012/09/03/the-problem-with-code-smells/
+- https://connascence.io/
+- https://programhappy.net/2020/09/19/fixing-dynamic-connascence/
+- https://www.maibornwolff.de/en/blog/connascence-rules-good-software-design
+
+
+
+
+</script></section></div>
+    </div>
+
+    <script src="./dist/reveal.js"></script>
+
+    <script src="./plugin/markdown/markdown.js"></script>
+    <script src="./plugin/highlight/highlight.js"></script>
+    <script src="./plugin/zoom/zoom.js"></script>
+    <script src="./plugin/notes/notes.js"></script>
+    <script src="./plugin/math/math.js"></script>
+    <script src="./plugin/mermaid/mermaid.min.js"></script>
+    <script src="./plugin/mermaid/reveal-mermaid.js"></script>
+    <script src="./plugin/mindmap/d3.min.js"></script>
+    <script src="./plugin/mindmap/markmap-view.js"></script>
+    <script src="./plugin/mindmap/markmap-lib.js"></script>
+    <script src="./plugin/mindmap/reveal-mindmap.js"></script>
+    <script>
+      function extend() {
+        var target = {};
+        for (var i = 0; i < arguments.length; i++) {
+          var source = arguments[i];
+          for (var key in source) {
+            if (source.hasOwnProperty(key)) {
+              target[key] = source[key];
+            }
+          }
+        }
+        return target;
+      }
+
+      // default options to init reveal.js
+      var defaultOptions = {
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+        transition: 'default', // none/fade/slide/convex/concave/zoom
+        plugins: [
+          RevealMarkdown,
+          RevealHighlight,
+          RevealZoom,
+          RevealNotes,
+          RevealMath
+        ]
+      };
+
+      // options from URL query string
+      var queryOptions = Reveal().getQueryHash() || {};
+
+      var options = extend(defaultOptions, {}, queryOptions);
+    </script>
+
+
+    <script>
+      Reveal.initialize(options);
+    </script>
+  </body>
+</html>
