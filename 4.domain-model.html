@@ -1,0 +1,353 @@
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <title>Presentation</title>
+    <link rel="shortcut icon" href="./favicon.ico"/>
+    <link rel="stylesheet" href="./dist/reveal.css" />
+    <link rel="stylesheet" href="./dist/theme/black.css" id="theme" />
+    <link rel="stylesheet" href="./css/highlight/zenburn.css" />
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides"><section  data-markdown><script type="text/template"># Domain model: Anaemic or Rich?
+
+</script></section><section  data-markdown><script type="text/template">
+#### Enterprise Application Architecture Patterns
+Martin Fowler, 2002
+
+#### Domain-Driven Design: Tackling Complexity in the Heart of Software
+Erik Evans 2002
+</script></section><section  data-markdown><script type="text/template">
+## Anaemic Domain Model
+
+- a model with no business logic inside, data without behavior
+- domain classes look more like a bunch of public setters and getters without domain logic 
+- the client of the class has control over how to instantiate and modify the class
+- the logic has been pushed to other classes called something like services, helper or manager plus the name of the domain class
+</script></section><section  data-markdown><script type="text/template">
+```java
+public class Order {
+   private BigDecimal total;
+   private List<OrderItem> items;
+
+   public BigDecimal getTotal() {
+      return total;
+   }
+
+   public void setTotal(BigDecimal total) {
+      this.total = total;
+   }
+
+   public List<OrderItem> getItems() {
+      return items;
+   }
+
+   public void setItems(List<OrderItem> items) {
+      this.items = items;
+   }
+}
+```
+</script></section><section  data-markdown><script type="text/template">
+```java
+public class OrderItem {
+   private BigDecimal price;
+   private int quantity;
+   private String name;
+
+   public BigDecimal getPrice() {
+      return price;
+   }
+
+   public void setPrice(BigDecimal price) {
+     this.price = price;
+   }
+
+   public int getQuantity() {
+     return quantity;
+   }
+
+   public void setQuantity(int quantity) {
+     this.quantity= quantity;
+   }
+
+...
+
+}
+```
+</script></section><section  data-markdown><script type="text/template">
+
+```java
+public class OrderService {
+
+   public void calculateTotal(Order order) {
+      if (order == null) {
+          throw new IllegalArgumentException("order must not be null");
+      }
+
+      BigDecimal total = BigDecimal.ZERO;
+      List<OrderItem> items = order.getItems();
+
+      for (OrderItem orderItem : items) {
+          int quantity = orderItem.getQuantity();
+          BigDecimal price = orderItem.getPrice();
+          BigDecimal itemTotal = price.multiply(new BigDecimal(quantity));
+          total = total.add(itemTotal);
+     }
+     order.setTotal(total);
+   }
+}
+```
+</script></section><section  data-markdown><script type="text/template">
+![](images/1631864755.695318.png)
+</script></section><section  data-markdown><script type="text/template">
+### Cons
+- Lacks encapsulation 
+  - Lack of integrity protection: cannot guarantee invariables, meaning valid state of entities, mutable parts are accessible from everywhere and open to side-effects
+  - Lack of information hiding
+- Lacks explorability (code cannot be easily explored because data and code that works on that data are in separate places)
+- It is in procedural style (transaction script pattern)
+- Procedural style code does not mean it is in functional style because in functional style, objects should be immutable and pure functions can not change the state of an object
+</script></section><section  data-markdown><script type="text/template">
+
+### Pros
+- Works well for **simple** applications
+- Clear separation between logic and data
+- Results in **stateless** logic, which facilitates scaling out
+- Avoids the need for a complex O-R mapping layer,  more compatibility with mapping and injection frameworks expecting dumb properties rather than a specific constructor or property population order.
+- Tools friendly, code generation 
+</script></section><section  data-markdown><script type="text/template">
+
+> The fundamental horror of this anti-pattern is that it’s so contrary to the basic idea of object-oriented design; which is to combine data and process together.
+
+Martin Fowler, Anemic Domain Model, 2003
+</script></section><section  data-markdown><script type="text/template">
+
+> Anemic Domain Models appear everywhere in our industry every day. The problem is that most developers seem to think this is completely normal and do not recognize that there is a serious side effect when employed on their systems. It’s a real problem.
+
+Vaughn Vernon, IDDD, 2013
+</script></section><section  data-markdown><script type="text/template">
+
+## Rich Domain Model
+
+- All the domain logic is implemented in real domain objects, incorporates both **behavior** and **data**
+- The service layer is thin and used only for 3rd party services
+</script></section><section  data-markdown><script type="text/template">
+
+> A Domain Model creates a web of interconnected objects, where each object represents some meaningful individual, whether as large as a corporation or as small as a single line on an order form.
+
+https://martinfowler.com/eaaCatalog/domainModel.html
+</script></section><section  data-markdown><script type="text/template">
+
+```java
+public class Order {
+
+   private BigDecimal total;
+   private final List<OrderItem> items = new ArrayList<OrderItem>();
+
+   /**
+     * The total is defined as the sum of all {@link OrderItem#getTotal()}.
+     *
+     * @return the total of this {@link Order}.
+     */
+   public BigDecimal getTotal() {
+      if (total == null) {
+         /*
+          * we have to calculate the total and remember the result
+          */
+          BigDecimal orderItemTotal = BigDecimal.ZERO;
+          List<OrderItem> items = getItems();
+
+          for (OrderItem orderItem : items) {
+             BigDecimal itemTotal = orderItem.getTotal();
+            /*
+             * add the total of an OrderItem to our total.
+             */
+             orderItemTotal = orderItemTotal.add(itemTotal);
+          }
+          this.total = orderItemTotal;
+      }
+      return total;
+   }
+
+   /**
+     * Adds the {@link OrderItem} to this {@link Order}.
+     *
+     * @param orderItem
+     *            the {@link OrderItem} to add. Must not be null.
+     */
+    public void addItem(OrderItem orderItem) {
+       if (orderItem == null) {
+          throw new IllegalArgumentException("orderItem must not be null");
+       }
+       if (this.items.add(orderItem)) {
+           /*
+            * the list of order items changes so we reset the total field to
+            * let getTotal re-calculate the total.
+            */ 
+            this.total = null;
+       }
+    }
+
+    /**
+      *
+      * @return the {@link OrderItem} that belong to this {@link Order}. Clients
+      *         may not modify the returned {@link List}. Use
+      *         {@link #addItem(OrderItem)} instead.
+      */
+    public List<OrderItem> getItems() {
+         /*
+          * we wrap our items to prevent clients from manipulating our internal
+          * state.
+          */
+         return Collections.unmodifiableList(items);
+    }
+
+}
+
+```</script></section><section  data-markdown><script type="text/template">
+```java
+
+import java.math.BigDecimal;
+
+public class OrderItem {
+    private BigDecimal price;
+    private int quantity;
+    private String name = "no name";
+
+    public OrderItem(BigDecimal price, int quantity, String name) {
+       if (price == null) {
+          throw new IllegalArgumentException("price must not be null");
+       }
+       if (name == null) {
+          throw new IllegalArgumentException("name must not be null");
+       }
+       if (price.compareTo(BigDecimal.ZERO) < 0) {
+          throw new IllegalArgumentException(
+                "price must be a positive big decimal");
+       }
+       if (quantity < 1) {
+          throw new IllegalArgumentException("quantity must be 1 or greater");
+       }
+       this.price = price;
+       this.quantity = quantity;
+       this.name = name;
+    }
+
+    public BigDecimal getPrice() { return price;}
+
+    public int getQuantity() { return quantity; }
+
+    public String getName() { return name; }
+
+   /**
+     * The total is defined as the {@link #getPrice()} multiplied with the
+     * {@link #getAmount()}.
+     *
+     * @return
+     */
+    public BigDecimal getTotal() {
+       int quantity = getQuantity();
+       BigDecimal price = getPrice();
+       BigDecimal total = price.multiply(new BigDecimal(quantity));
+       return total;
+    }
+}
+```
+</script></section><section  data-markdown><script type="text/template">
+￼![](images/1631864775.954803.png)
+</script></section><section  data-markdown><script type="text/template">
+![](images/onion_arch.png)
+</script></section><section  data-markdown><script type="text/template">
+### Challenges of Rich Domain
+- DDD learning curve
+-  Domain models has risks to exposes/transferred through layers/boundaries,   DTOs
+  - redundant work
+  - code duplication
+- Entities vs Value objects
+- Entities associations
+- Relational database mapping: 
+  - domain objects perform the business logic = operations on the internal state
+  - CRUD /persistent handled by Repository 
+</script></section><section  data-markdown><script type="text/template">
+
+### Refactoring from Anaemic Model to Domain Model
+
+- Entity and association
+- Value objects
+- Move validation logic into models
+- Move business logic from controller/service into models
+</script></section><section  data-markdown><script type="text/template">
+## Spend more time on domain
+
+</script></section><section  data-markdown><script type="text/template">
+![](images/Domain-Oriented-Approach-figure-4.png)
+</script></section><section  data-markdown><script type="text/template">
+## Reference
+
+- https://martinfowler.com/eaaCatalog/domainModel.html
+- https://homepages.fhv.at/thjo/lecturenotes/sysan/domain-modeling.html
+- https://dzone.com/articles/anaemic-vs-rich-domain-objects-finding-the-balance
+- http://stg-tud.github.io/eise/WS11-EiSE-07-Domain_Modeling.pdf
+- https://github.com/kdakan/Refactoring-to-a-Rich-Domain-Model
+</script></section></div>
+    </div>
+
+    <script src="./dist/reveal.js"></script>
+
+    <script src="./plugin/markdown/markdown.js"></script>
+    <script src="./plugin/highlight/highlight.js"></script>
+    <script src="./plugin/zoom/zoom.js"></script>
+    <script src="./plugin/notes/notes.js"></script>
+    <script src="./plugin/math/math.js"></script>
+    <script src="./plugin/mermaid/mermaid.min.js"></script>
+    <script src="./plugin/mermaid/reveal-mermaid.js"></script>
+    <script src="./plugin/mindmap/d3.min.js"></script>
+    <script src="./plugin/mindmap/markmap-view.js"></script>
+    <script src="./plugin/mindmap/markmap-lib.js"></script>
+    <script src="./plugin/mindmap/reveal-mindmap.js"></script>
+    <script>
+      function extend() {
+        var target = {};
+        for (var i = 0; i < arguments.length; i++) {
+          var source = arguments[i];
+          for (var key in source) {
+            if (source.hasOwnProperty(key)) {
+              target[key] = source[key];
+            }
+          }
+        }
+        return target;
+      }
+
+      // default options to init reveal.js
+      var defaultOptions = {
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+        transition: 'default', // none/fade/slide/convex/concave/zoom
+        plugins: [
+          RevealMarkdown,
+          RevealHighlight,
+          RevealZoom,
+          RevealNotes,
+          RevealMath
+        ]
+      };
+
+      // options from URL query string
+      var queryOptions = Reveal().getQueryHash() || {};
+
+      var options = extend(defaultOptions, {}, queryOptions);
+    </script>
+
+
+    <script>
+      Reveal.initialize(options);
+    </script>
+  </body>
+</html>
