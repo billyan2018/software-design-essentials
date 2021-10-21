@@ -14,13 +14,17 @@
   <body>
     <div class="reveal">
       <div class="slides"><section  data-markdown><script type="text/template"># Domain model: Anaemic or Rich?
-
 </script></section><section  data-markdown><script type="text/template">
 #### Enterprise Application Architecture Patterns
-Martin Fowler, 2002
+> Martin Fowler, 2002
+
+![](images/poeaa.jpg)
+</script></section><section  data-markdown><script type="text/template">
 
 #### Domain-Driven Design: Tackling Complexity in the Heart of Software
-Erik Evans 2002
+> Eric Evans 2002
+
+![](images/ddd.jpg)
 </script></section><section  data-markdown><script type="text/template">
 ## Anaemic Domain Model
 
@@ -107,7 +111,7 @@ public class OrderService {
 ### Cons
 - Lacks encapsulation 
   - Lack of integrity protection: cannot guarantee invariables, meaning valid state of entities, mutable parts are accessible from everywhere and open to side-effects
-  - Lack of information hiding
+  - Lack of information hiding, data directly exposed
 - Lacks explorability (code cannot be easily explored because data and code that works on that data are in separate places)
 - It is in procedural style (transaction script pattern)
 - Procedural style code does not mean it is in functional style because in functional style, objects should be immutable and pure functions can not change the state of an object
@@ -262,8 +266,19 @@ public class OrderItem {
 </script></section><section  data-markdown><script type="text/template">
 ![](images/onion_arch.png)
 </script></section><section  data-markdown><script type="text/template">
+### Pros
+
+- OO
+  - encapsulation
+  - information hiding
+- business logic are implemented by domain objects, which has no external dependency
+  - Dependency inversion principle
+  - easy to test
+</script></section><section  data-markdown><script type="text/template">
+
 ### Challenges of Rich Domain
 - DDD learning curve
+- Logic is no long in one place, but implemented in different objects
 -  Domain models has risks to exposes/transferred through layers/boundaries,   DTOs
   - redundant work
   - code duplication
@@ -293,6 +308,7 @@ public class OrderItem {
 - https://dzone.com/articles/anaemic-vs-rich-domain-objects-finding-the-balance
 - http://stg-tud.github.io/eise/WS11-EiSE-07-Domain_Modeling.pdf
 - https://github.com/kdakan/Refactoring-to-a-Rich-Domain-Model
+- https://www.mscharhag.com/architecture/layer-onion-hexagonal-architecture
 </script></section></div>
     </div>
 
