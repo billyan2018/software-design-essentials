@@ -1,0 +1,193 @@
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <title>Presentation</title>
+    <link rel="shortcut icon" href="./favicon.ico"/>
+    <link rel="stylesheet" href="./dist/reveal.css" />
+    <link rel="stylesheet" href="./dist/theme/black.css" id="theme" />
+    <link rel="stylesheet" href="./css/highlight/zenburn.css" />
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides"><section  data-markdown><script type="text/template"># Domain Modeling
+
+</script></section><section  data-markdown><script type="text/template">
+
+## What is Domain Model
+
+- The Domain Model is your organized and structured **knowledge** of the **problem** . The Domain Model should represent the **vocabulary** and **key concepts** of the problem domain and it should identify the **relationships** among all of the **entities** within the scope of the domain.
+</script></section><section  data-markdown><script type="text/template">
+
+- A domain model is a **visual representation** of conceptual classes or real-world objects in a domain of interest.” 
+- A visual dictionary of abstractions.
+- A conceptual model of the domain that incorporates both **behavior** and **data** 
+- It is the basis for the design of the software
+
+</script></section><section  data-markdown><script type="text/template">
+
+
+
+## Names
+- domain model
+- conceptual model
+- domain object model 
+- analysis object model
+
+
+</script></section><section  data-markdown><script type="text/template">
+
+
+
+## Domain modeling
+
+</script></section><section  data-markdown><script type="text/template">
+
+
+### Why
+- understanding of the problem
+- to form a common language
+- one of the key models used in software engineering: if you only model one thing, model the domain.
+- a relatively small domain-modeling effort is a great tool for controlling the complexity of the system under development.
+</script></section><section  data-markdown><script type="text/template">
+
+![](images/1634631225.712286.png)
+
+### When
+</script></section><section  data-markdown><script type="text/template">
+
+![](images/1634706982.067541.png)
+
+</script></section><section  data-markdown><script type="text/template">
+
+### How
+
+
+
+</script></section><section  data-markdown><script type="text/template">
+
+```mermaid
+graph LR
+
+T[talking with domain expert] --->| record | A[verbal description]
+ A ---> |find noun, concept| E[entity] 
+A -->| analyze relationship | R[relationship]
+E -->|form| M[draft domain model]
+R -->|form| M
+M--->|refine| M
+M ---> |guid| W[workable software]
+M ---> T
+W ---> M
+W ---> T
+```
+
+</script></section><section  data-markdown><script type="text/template">
+
+### Case study 1
+A **vehicle** is a mobile **machine** that transports people or cargo. Typical vehicles include wagons, bicycles, motor vehicles (motorcycles, cars, trucks, buses), railed vehicles (trains, trams), watercraft (ships, boats), **aircraft** and **spacecraft**. **Land vehicles** are classified broadly by what is used to apply steering and drive forces against the ground: wheeled, tracked, railed or skied.
+
+</script></section><section  data-markdown><script type="text/template">
+
+### Case study 2
+
+
+
+- a person has zero or multiple telephone numbers
+- a person has zero or multiple addresses
+- a person has zero or multiple emails
+- similar to a company
+
+</script></section><section  data-markdown><script type="text/template">
+
+###  Case study 3
+
+
+- organization: ACM = Aroma Coffee Makers, Inc.
+- it has operating units, which are divided into regions, which are divided into divisions, which are divided into sales offices
+
+</script></section><section  data-markdown><script type="text/template">
+
+structure with an explicit level
+```mermaid
+classDiagram
+   OperatingUnit *-- Region
+   Region  *-- Division
+   Division  *-- SalesOffice
+
+```
+
+</script></section><section  data-markdown><script type="text/template">
+
+flexible model
+
+
+```mermaid
+classDiagram
+    Organization <|-- OperatingUnit
+    Organization <|-- Region
+   Organization  <|-- Division
+   Organization  <|-- SalesOffice
+   Organization o-- Organization
+
+```
+</script></section></div>
+    </div>
+
+    <script src="./dist/reveal.js"></script>
+
+    <script src="./plugin/markdown/markdown.js"></script>
+    <script src="./plugin/highlight/highlight.js"></script>
+    <script src="./plugin/zoom/zoom.js"></script>
+    <script src="./plugin/notes/notes.js"></script>
+    <script src="./plugin/math/math.js"></script>
+    <script src="./plugin/mermaid/mermaid.min.js"></script>
+    <script src="./plugin/mermaid/reveal-mermaid.js"></script>
+    <script src="./plugin/mindmap/d3.min.js"></script>
+    <script src="./plugin/mindmap/markmap-view.js"></script>
+    <script src="./plugin/mindmap/markmap-lib.js"></script>
+    <script src="./plugin/mindmap/reveal-mindmap.js"></script>
+    <script>
+      function extend() {
+        var target = {};
+        for (var i = 0; i < arguments.length; i++) {
+          var source = arguments[i];
+          for (var key in source) {
+            if (source.hasOwnProperty(key)) {
+              target[key] = source[key];
+            }
+          }
+        }
+        return target;
+      }
+
+      // default options to init reveal.js
+      var defaultOptions = {
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+        transition: 'default', // none/fade/slide/convex/concave/zoom
+        plugins: [
+          RevealMarkdown,
+          RevealHighlight,
+          RevealZoom,
+          RevealNotes,
+          RevealMath
+        ]
+      };
+
+      // options from URL query string
+      var queryOptions = Reveal().getQueryHash() || {};
+
+      var options = extend(defaultOptions, {}, queryOptions);
+    </script>
+
+
+    <script>
+      Reveal.initialize(options);
+    </script>
+  </body>
+</html>
