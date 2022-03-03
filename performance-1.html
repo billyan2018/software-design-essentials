@@ -1,0 +1,367 @@
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <title>Presentation</title>
+    <link rel="shortcut icon" href="./favicon.ico"/>
+    <link rel="stylesheet" href="./dist/reveal.css" />
+    <link rel="stylesheet" href="./dist/theme/black.css" id="theme" />
+    <link rel="stylesheet" href="./css/highlight/zenburn.css" />
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides"><section  data-markdown><script type="text/template"># Code for Performance: Measure and Analyze
+</script></section><section  data-markdown><script type="text/template">
+![pdsa](images/pdsa.png)
+</script></section><section  data-markdown><script type="text/template">
+<embed src="images/overview.svg">
+</embed>
+</script></section><section  data-markdown><script type="text/template">
+
+
+```java
+static double distance(double x1, double y1, double x2, double y2) {
+    double dx = x2 - x1;
+    double dy = y2 - y1;
+    return Math.sqrt((dx * dx) + (dy * dy));
+}
+
+static double constant(double x1, double y1, double x2, double y2) {
+    return 0.0d;
+}
+
+static void nothing() {
+    // this really does nothing
+}
+```
+</script></section><section  data-markdown><script type="text/template">```java
+public class NaiveMark {
+
+    private static final int RUN_COUNT = 1000;
+
+    public static void main(String[] args) {
+        long start = System.nanoTime();
+        for (int i = 0; i < RUN_COUNT; i++) {
+            Operations.nothing();
+        }
+        long end = System.nanoTime();
+        for (int i = 0; i < RUN_COUNT; i++) {
+            Operations.constant(0.0, 0.0, 10.0, 10.0);
+        }
+        long end2 = System.nanoTime();
+        for (int i = 0; i < RUN_COUNT; i++) {
+            Operations.distance(0.0, 0.0, 10.0, 10.0);
+        }
+        long end3 = System.nanoTime();
+        System.out.println("do nothing:" + (end - start));
+        System.out.println("constant:" + (end2 - end));
+        System.out.println("distance:" + (end3 - end2));
+    }
+}
+```
+</script></section><section  data-markdown><script type="text/template">- do nothing:10891250
+- constant:62500
+- distance:135084
+</script></section><section  data-markdown><script type="text/template">
+
+benchmark
+
+```java
+public class BenchMark {
+
+    static final long RUN_MILLIS =
+            2000;
+    static final int REPEAT = 10;
+    static final int WARMUP = 2;
+    static final int LOOP = 10_000;
+
+    public static void bench(String name, long runMillis, int loop,
+                             int warmup, int repeat, Runnable runnable) {
+        System.out.println("Running: " + name);
+        int max = repeat + warmup;
+        long average = 0L;
+        for (int i = 0; i < max; i++) {
+            long nops = 0;
+            long duration = 0L;
+            long start = System.currentTimeMillis();
+            while (duration < runMillis) {
+                for (int j = 0; j < loop; j++) {
+                    runnable.run();
+                    nops++;
+                }
+                duration = System.currentTimeMillis() - start;
+            }
+            long throughput = nops / duration;
+            boolean benchRun = i >= warmup;
+            if (benchRun) {
+                average = average + throughput;
+            }
+            System.out.print(throughput + " ops/ms" + (
+                    !benchRun ? " (warmup) | " : " | "));
+        }
+        average = average / repeat;
+        System.out.println("\n[ ~" + average + " ops/ms ]\n");
+    }
+
+```</script></section><section  data-markdown><script type="text/template">
+```java
+    public static void main(String[] args) {
+        bench("distance", RUN_MILLIS,
+                LOOP, WARMUP, REPEAT, () ->
+                       Operations.distance(0.0d, 0.0d, 10.0d,
+                                10.0d));
+
+        bench("constant", RUN_MILLIS,
+                LOOP, WARMUP, REPEAT, () ->
+                        Operations.distance(0.0d, 0.0d, 10.0d,
+                                10.0d));
+
+        bench("nothing", RUN_MILLIS,
+                LOOP, WARMUP, REPEAT, () ->
+                        Operations.distance(0.0d, 0.0d, 10.0d,
+                                10.0d));
+    }
+
+}
+```
+</script></section><section  data-markdown><script type="text/template">
+
+```
+Running: distance
+27209320 ops/ms (warmup) | 27660040 ops/ms (warmup) | 27537085 ops/ms | 27553335 ops/ms | 27506775 ops/ms | 27606355 ops/ms | 27529085 ops/ms | 27558050 ops/ms | 27579530 ops/ms | 27670060 ops/ms | 27666150 ops/ms | 27681340 ops/ms | 
+[ ~27588776 ops/ms ]
+
+Running: constant
+1287630 ops/ms (warmup) | 772040 ops/ms (warmup) | 780750 ops/ms | 781515 ops/ms | 778090 ops/ms | 779720 ops/ms | 780140 ops/ms | 778580 ops/ms | 779500 ops/ms | 779345 ops/ms | 780475 ops/ms | 779335 ops/ms | 
+[ ~779745 ops/ms ]
+
+Running: nothing
+292640 ops/ms (warmup) | 294950 ops/ms (warmup) | 296300 ops/ms | 280255 ops/ms | 296820 ops/ms | 297210 ops/ms | 279560 ops/ms | 288835 ops/ms | 296610 ops/ms | 296270 ops/ms | 296645 ops/ms | 296315 ops/ms | 
+[ ~292482 ops/ms ]
+```
+</script></section><section  data-markdown><script type="text/template">
+
+
+
+# Why???
+</script></section><section  data-markdown><script type="text/template">
+- Compiler + JVM code optimization
+- these optimizations may not be possible to apply when the component is running as part of a larger application.
+</script></section><section  data-markdown><script type="text/template">
+# Dead Code Elimination
+
+
+```java
+public void objectCreation() {
+       new Object();
+}
+```</script></section><section  data-markdown><script type="text/template">
+# Constant Folding
+
+
+```java
+public double foldedLog() {
+    int x = 8;
+    return Math.log(x);
+}
+```
+
+</script></section><section  data-markdown><script type="text/template">
+> The first principle is that you must not fool yourself - and you are the easiest person to fool.    
+
+Richard Feynman
+</script></section><section  data-markdown><script type="text/template">
+# JMH
+- a Java harness for building, running, and analysing nano/micro/milli/macro benchmarks written in Java and other languages targeting the JVM.
+- https://github.com/openjdk/jmh
+</script></section><section  data-markdown><script type="text/template">
+```java
+public class MicroMark {
+
+    @Benchmark
+    public double distance_folding() {
+        return Operations.distance(0.0, 0.0, 10.0, 10.0);
+    }
+
+    @Benchmark
+    public void distance_deadcode(Data data) {
+        Operations.distance(data.x1, data.y1, data.x2, data.y2);
+    }
+
+    @Benchmark
+    public void distance_deadcode_and_folding() {
+        Operations.distance(0.0, 0.0, 10.0, 10.0);
+    }
+
+    @Benchmark
+    public double distance_with_return(Data data) {
+        return Operations.distance(data.x1, data.y1, data.x2, data.y2);
+    }
+
+    @Benchmark
+    public void distance_with_blackhole(Data data, Blackhole blackhole) {
+
+        blackhole.consume(Operations.distance(data.x1, data.y1, data.x2, data.y2));
+    }
+
+    @State(Scope.Thread)
+    static class Data {
+        double x1 = 0.0;
+        double y1 = 0.0;
+        double x2 = 10.0;
+        double y2 = 10.0;
+    }
+}
+```
+</script></section><section  data-markdown><script type="text/template">
+Result:
+```
+Benchmark                                 Mode  Cnt        Score       Error   Units
+MicroMark.distance_deadcode              thrpt   25  1118474.550 ± 17856.847  ops/ms
+MicroMark.distance_deadcode_and_folding  thrpt   25  1075672.791 ± 95005.844  ops/ms
+MicroMark.distance_folding               thrpt   25   298708.237 ±  1775.704  ops/ms
+MicroMark.distance_with_blackhole        thrpt   25   249567.109 ±   653.027  ops/ms
+MicroMark.distance_with_return           thrpt   25   249119.085 ±  1241.579  ops/ms
+```</script></section><section  data-markdown><script type="text/template">
+# visualvm
+- VisualVM is an All-in-One Java Troubleshooting Tool
+- Open source from Oracle: https://visualvm.github.io
+</script></section><section  data-markdown><script type="text/template">
+![](images/visual_vm.png)
+</script></section><section  data-markdown><script type="text/template">
+
+# async-profiler
+
+- [async-profiler](https://github.com/jvm-profiling-tools/async-profiler)
+- IDEA plugin: https://www.jetbrains.com/help/idea/async-profiler.html
+</script></section><section  data-markdown><script type="text/template">
+## flame graph
+
+A flame graph visualizes a collection of **stack traces** 
+
+-  The y-axis shows the **stack depth**
+- The x-axis spans the **stack trace** collection. 
+
+- The width of each function box shows the **frequency** at which that function was present in the stack traces, or part of a stack trace ancestry. 
+- The background color for each box is not significant and is picked at random to be a warm hue. 
+</script></section><section  data-markdown><script type="text/template">
+
+![](images/flame_graph.png)
+</script></section><section  data-markdown><script type="text/template">
+![](images/flame_graph_2.png)
+</script></section><section  data-markdown><script type="text/template">
+![](images/flame_graph_3.png)
+</script></section><section  data-markdown><script type="text/template">
+# 10m57s
+# 4m18s
+</script></section><section  data-markdown><script type="text/template"># Further
+
+- Dev vs PRD
+- JMH + JUnit
+
+```java
+      @Test
+       public void runJmhBenchmark() throws RunnerException {
+             Options opt = new OptionsBuilder()
+                          .include(JmhBenchmark.class.getSimpleName())
+                          .build();
+             Collection<RunResult> runResults = new Runner(opt).run();
+             assertFalse(runResults.isEmpty());
+             for(RunResult runResult : runResults) {
+                    assertDeviationWithin(runResult, REFERENCE_SCORE, 0.05);
+             }
+       }
+
+       private static void assertDeviationWithin(RunResult result, double referenceScore, double maxDeviation) {
+             double score = result.getPrimaryResult().getScore();
+             double deviation = Math.abs(score/referenceScore - 1);
+             String deviationString = df.format(deviation * 100) + "%";
+             String maxDeviationString = df.format(maxDeviation * 100) + "%";
+             String errorMessage = "Deviation " + deviationString + " exceeds maximum allowed deviation " + maxDeviationString;
+             assertTrue(errorMessage, deviation < maxDeviation);
+       }
+```
+
+</script></section><section  data-markdown><script type="text/template">
+# Summary
+- Performance optimization begins with measurement
+- java application performance measurement is hard
+- JMH is a good tool for micro-benchmark
+- profiling: flame graph and visualVM
+
+<style>
+pre, code {
+    white-space: pre-wrap;
+}
+.reveal h1 {
+    font-size: 2em;
+}
+</style>
+</script></section><section  data-markdown><script type="text/template">
+# Reference
+- JMH
+  - https://www.baeldung.com/java-microbenchmark-harness
+  - IDEA plugin: https://github.com/artyushov/idea-jmh-plugin
+- https://app.pluralsight.com/library/courses/java-9-micro-experimentation-tools/table-of-contents
+
+</script></section></div>
+    </div>
+
+    <script src="./dist/reveal.js"></script>
+
+    <script src="./plugin/markdown/markdown.js"></script>
+    <script src="./plugin/highlight/highlight.js"></script>
+    <script src="./plugin/zoom/zoom.js"></script>
+    <script src="./plugin/notes/notes.js"></script>
+    <script src="./plugin/math/math.js"></script>
+    <script src="./plugin/mermaid/mermaid.min.js"></script>
+    <script src="./plugin/mermaid/reveal-mermaid.js"></script>
+    <script src="./plugin/mindmap/d3.min.js"></script>
+    <script src="./plugin/mindmap/markmap-view.js"></script>
+    <script src="./plugin/mindmap/markmap-lib.js"></script>
+    <script src="./plugin/mindmap/reveal-mindmap.js"></script>
+    <script>
+      function extend() {
+        var target = {};
+        for (var i = 0; i < arguments.length; i++) {
+          var source = arguments[i];
+          for (var key in source) {
+            if (source.hasOwnProperty(key)) {
+              target[key] = source[key];
+            }
+          }
+        }
+        return target;
+      }
+
+      // default options to init reveal.js
+      var defaultOptions = {
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+        transition: 'default', // none/fade/slide/convex/concave/zoom
+        plugins: [
+          RevealMarkdown,
+          RevealHighlight,
+          RevealZoom,
+          RevealNotes,
+          RevealMath
+        ]
+      };
+
+      // options from URL query string
+      var queryOptions = Reveal().getQueryHash() || {};
+
+      var options = extend(defaultOptions, {}, queryOptions);
+    </script>
+
+
+    <script>
+      Reveal.initialize(options);
+    </script>
+  </body>
+</html>
