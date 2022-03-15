@@ -1,28 +1,23 @@
-<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 
-    <title>Think in design</title>
+    <title>Presentation</title>
     <link rel="shortcut icon" href="./favicon.ico"/>
     <link rel="stylesheet" href="./dist/reveal.css" />
-    <link rel="stylesheet" href="./dist/theme/black.css" id="theme" />
+    <link rel="stylesheet" href="./dist/theme/sky.css" id="theme" />
     <link rel="stylesheet" href="./css/highlight/zenburn.css" />
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
 
   </head>
   <body>
     <div class="reveal">
       <div class="slides"><section  data-markdown><script type="text/template"># Software Design Essentials
 </script></section><section  data-markdown><script type="text/template">
-
 ## Why
 </script></section><section  data-markdown><script type="text/template">
-## Plan
-- Inspiration
-- 7-8 sessions
-- do/ not do
-</script></section><section  data-markdown><script type="text/template">
+
 ![](images/door-1-a.png)
 </script></section><section  data-markdown><script type="text/template">
 
@@ -47,8 +42,9 @@
 - 1956 Ph.D. from Harvard Univ
 - 1956-1965 System 360
 - 1975  "The mythical man-month"
-- 1995 anniversary edition in 1995
-</script></section><section  data-markdown><script type="text/template">- 2010 interviewed by Wired magazine
+- 1995 anniversary edition
+</script></section><section  data-markdown><script type="text/template">
+- 2010 interviewed by Wired magazine
 - Q: What do you consider your greatest technological achievement?
 - A: The most important single decision I ever made was to change the IBM 360 series from a 6-bit byte to an 8-bit byte, thereby enabling the use of lowercase letters. That change propagated everywhere.
 </script></section><section  data-markdown><script type="text/template">
@@ -59,13 +55,13 @@ IBM’s very popular 1401
 Customer’s choices:
 - move to a bigger IBM system, such as an IBM 7000
 - install a competitor’s system
-- acquire more 1401s. 
+- acquire more 1401s
 </script></section><section  data-markdown><script type="text/template">
 
 
-- The IBM System/360 (S/360) is a family of mainframe computer systems that was announced by IBM on April 7, 1964, and delivered between 1965 and 1978. 
+- The IBM System/360 (S/360) is a family of mainframe computer systems that was announced by IBM on April 7, 1964, and delivered between 1965 and 1978.
 - The first family of computers designed to cover the complete range of applications, from small to large, both commercial and scientific.
-- allowing customers to purchase a smaller system with the knowledge they would always be able to migrate upward if their needs grew, without reprogramming of application software or replacing peripheral devices. 
+- allowing customers to purchase a smaller system with the knowledge they would always be able to migrate upward if their needs grew, without reprogramming of application software or replacing peripheral devices.
 </script></section><section  data-markdown><script type="text/template">
 ![360](https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/IBM_System360_Model_30.jpg/330px-IBM_System360_Model_30.jpg)
 </script></section><section  data-markdown><script type="text/template">
@@ -75,12 +71,11 @@ Customer’s choices:
 - Vice president of manufacturing and development: Learson
 </script></section><section  data-markdown><script type="text/template">
 
-![](https://spectrum.ieee.org/image/MzI2NzIyMg.jpeg)</script></section><section  data-markdown><script type="text/template">
-- From the beginning we faced two risks, either of which was enough to keep us awake at night. 
-- First there was the task of coordinating the hardware and software design work for the new line. We had engineering teams all over America and Europe working simultaneously on six new processors and dozens of new peripherals… but in the end all of this hardware would have to plug together. 
-- The software was a bigger hurdle still. In order for System/360 to have a common personality, hundreds of programmers had to write millions of lines of computer code. Nobody had ever tackled that complex programming job, and the engineers were under great pressure to get it done.
+- From the beginning we faced two risks, either of which was enough to keep us awake at night.
+- First there was the task of coordinating the hardware and software design work for the new line. ... engineering teams all over America and Europe working simultaneously on six new processors and dozens of new peripherals… but in the end all of this hardware would have to plug together.
+- The software was a bigger hurdle still. In order for System/360 to have a common personality, hundreds of programmers had to write millions of lines of computer code. Nobody had ever tackled that complex programming job
 </script></section><section  data-markdown><script type="text/template">
-- From 7 April to when the company started delivering machines to customers, IBM entered the most dangerous, intense, and challenging era of its history. 
+- From 7 April to when the company started delivering machines to customers, IBM entered the most dangerous, intense, and challenging era of its history.
 - The company spent USD $5 billion (about $40 billion today) to develop the System/360, which at the time was more than IBM made in a year
 - eventually hire more than 70,000 new workers
 - Every IBMer believed that failure meant the death of IBM
@@ -102,31 +97,35 @@ Reasons to miss schedule:
 - man-month: schedule -- effort; man and month can be interchangable;
 - estimation is not continuous;
 - no effective monitoring;
-**adding more manpower to a late software makes it later**
+adding more manpower to a late software makes it later
 </script></section><section  data-markdown><script type="text/template">
 task types:
 - breakable;
 - unbreakable;
 - breakable and need communication `n*(n-1)/2`;
 </script></section><section  data-markdown><script type="text/template">
-schedule --- depends --> sequence
-manpower --- depends ----> the number of single tasks
 
+```mermaid
+graph LR
+schedule -->|depends| sequence
+manpower --> |depends| T[ the number of single tasks]
+```
+</script></section><section  data-markdown><script type="text/template">
 experience formula
-1/3 planning
-1/6 coding
-1/4 component testing and early system testing
-1/4 system testing
+- 1/3 planning
+- 1/6 coding
+- 1/4 component testing and early system testing
+- 1/4 system testing
 </script></section><section  data-markdown><script type="text/template">
 ### Team: the surgical team
 - separate a large team into multiple small ones;
 - each team has the following roles
 - scalability
-
-challenges/ issues
+</script></section><section  data-markdown><script type="text/template">
+### challenges/ issues
 - Few key developers understand the problem domain to a sufficient degree, and must rely on domain experts. This is simply a function of specialization--it's tough to find kick-butt programmers who also are lawyers, doctors, accountants, or otherwise are experts in the domain the software is modeling.
 - Scalability is limited by the number of "surgeons" you have available.
-- There's a lot of down time for the other staff while they wait on instructions, since the highly-focused "doer" is also managing the team. That's ok in the OR, since you're dealing with a "zero-bug" mandate and "live software." But in this economy, a more distributed workload is more efficient, even if it results in the occasional sync problem between team members.
+- There's a lot of down time for the other staff while they wait on instructions, since the highly-focused "doer" is also managing the team.
 </script></section><section  data-markdown><script type="text/template">
 ### Aristocracy, Democracy and System Design
 
@@ -134,16 +133,17 @@ challenges/ issues
 - Software needs an additional level of integrity—it must maintain its usefulness over time. Software is usually expected to evolve gracefully as it adapts to the future. 
 - Software with integrity has a coherent architecture, scores high on usability and fitness for purpose, and is maintainable, adaptable, and extensible. 
 </script></section><section  data-markdown><script type="text/template">
+integrity comes from 
+- wise leadership
+- relevant expertise
+- effective communication
+- healthy discipline
 
-Research has shown that integrity comes from 
-- wise leadership, 
-- relevant expertise, 
-- effective communication, 
-and healthy discipline; 
-processes, procedures, and measurements are not adequate substitutes.
-</script></section><section  data-markdown><script type="text/template">
-### The second-system effect
-over design
+not from:
+- processes
+- procedures
+- measurements
+
 </script></section><section  data-markdown><script type="text/template">
 ### No Silver Bullet 
 There is no single development, in either **technology** or **management technique**, which by itself promise even one order-of-magnitude improvement within a decade in productivity, in reliability, in simplicity
@@ -209,9 +209,10 @@ I never felt such a Design Concept entity of the Operating System/360 software f
 </script></section><section  data-markdown><script type="text/template">```mermaid
 graph TD
     A[Object, Sample] -->|generalization, extract similarities| B[Concept]
-    B -->|build| C[thought]
-    B --->|form| D[ability]
-    B --->|present as|E[symbol]
+    B -->|builds| C[thought]
+    C -->| generates| Solution
+    B --->|form| D[knowledge]
+    B --->|is presented as|E[symbol]
 ```
 
 
@@ -227,7 +228,7 @@ graph TD
 ![](images/1618227323.945247.png)
 </script></section><section  data-markdown><script type="text/template">
 - The customers, the world, the business, via the product team are shaping or construing the problem domain 
-- good software architects, are responsible for the design of the solution domain, which includes the constructs, concepts and technology by which the solution will be implemented
+- good software designers, are responsible for the design of the solution domain, which includes the constructs, concepts and technology by which the solution will be implemented
 
 The problem domain and the solution domain are described using models and concepts. 
 
@@ -241,19 +242,16 @@ The concepts, and especially the model's different elements (entities, relations
 
 
 </script></section><section  data-markdown><script type="text/template">
-# Conceptual Integrity
+## Conceptual Integrity
 
-## Propriety
-a software system should have just the functions essential to its purpose and no more
-- complete
-- simple
-## Orthogonality
+### Propriety
+a software system should have just the functions essential to its purpose and no more （ complete & simple）
+
+### Orthogonality
 individual functions should be independent of one another
-## Generality
-a single function should be usable in many ways
 
- Blaauw and I have elsewhere discussed conceptual integrity at some length, identifying as component principles orthogonality, propriety, and generality. 
- the design of design
+### Generality
+a single function should be usable in many ways
 </script></section><section  data-markdown><script type="text/template">
 # Wrapper up
 
@@ -261,6 +259,26 @@ a single function should be usable in many ways
 - Design concept
 - Conceptual integrity
 </script></section><section  data-markdown><script type="text/template">
+# Exercise
+
+- describes the business concepts in your project. Where is the complexity come from?
+
+<style>
+pre, code {
+    white-space: pre-wrap;
+}
+.reveal h1 {
+    font-size: 2em;
+}
+.reveal h1 {
+    font-size: 1.6em;
+}
+
+.reveal .slides section, .reveal .slides section > section {
+    line-height: 1.0;
+}
+</style>
+
 </script></section></div>
     </div>
 
@@ -271,6 +289,12 @@ a single function should be usable in many ways
     <script src="./plugin/zoom/zoom.js"></script>
     <script src="./plugin/notes/notes.js"></script>
     <script src="./plugin/math/math.js"></script>
+    <script src="./plugin/mermaid/mermaid.min.js"></script>
+    <script src="./plugin/mermaid/reveal-mermaid.js"></script>
+    <script src="./plugin/mindmap/d3.min.js"></script>
+    <script src="./plugin/mindmap/markmap-view.js"></script>
+    <script src="./plugin/mindmap/markmap-lib.js"></script>
+    <script src="./plugin/mindmap/reveal-mindmap.js"></script>
     <script>
       function extend() {
         var target = {};
@@ -307,8 +331,6 @@ a single function should be usable in many ways
       var options = extend(defaultOptions, {}, queryOptions);
     </script>
 
-    <script src="./_assets/lib/mermaid.min.js"></script>
-    <script src="./_assets/lib/reveal-mermaid.js"></script>
 
     <script>
       Reveal.initialize(options);
