@@ -1,0 +1,421 @@
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <title>Presentation</title>
+    <link rel="shortcut icon" href="./favicon.ico"/>
+    <link rel="stylesheet" href="./dist/reveal.css" />
+    <link rel="stylesheet" href="./dist/theme/black.css" id="theme" />
+    <link rel="stylesheet" href="./css/highlight/zenburn.css" />
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+
+  </head>
+  <body>
+    <div class="reveal">
+      <div class="slides"><section  data-markdown><script type="text/template">## Code for Performance
+</script></section><section  data-markdown><script type="text/template">
+
+<img src="images/faralli.webp" style="width:45%;"/>
+VS
+<img src="images/train.jpg" style="width:45%;">
+</script></section><section  data-markdown><script type="text/template">
+- Performance: **Response time** vs **thoughput**
+
+- Improving performance means doing **more work** with **fewer resources** .
+- resources:
+  - CPU cycles
+  - Memory
+  - network bandwidth
+  - I/O bandwidth
+  - database requests
+  - disk space
+  - etc...
+</script></section><section  data-markdown><script type="text/template">
+
+![pdsa](images/pdsa.png)
+</script></section><section  data-markdown><script type="text/template">
+## Plan</script></section><section  data-markdown><script type="text/template">
+- Define the problem and objectives:
+  - context: hardware, network, system to integrate?
+  - understand the **challenging scenarios**: response time? concurrent users? data volume?
+  - constraints & assumptions?
+  - references?
+- Establish data collecting approaches
+  - how to test/verify?
+  - test data?
+- Strategies
+</script></section><section  data-markdown><script type="text/template">
+## Do
+  - Implement change
+
+## Study
+  - gather data: load test, micro-benchmark
+  - gap analysis
+
+## Act
+  - Implement what's working
+  - continually refine what isn't
+</script></section><section  data-markdown><script type="text/template">
+
+## Strategies
+
+- Reduce
+- Cheaper
+- Change time: pre, post, parallel
+</script></section><section  data-markdown><script type="text/template">
+## Reduce the work
+  - reduce creating: object pool, thread pool, connection pool, flyweight, StringBuilder
+  - reduce network requests: local storage, cache, HTTP2
+  - reduce DB queries/computing: materialized view, `preparedStatement`, pg `returning`
+  - reduce wasting: dead code, premature
+</script></section><section  data-markdown><script type="text/template">
+## Replace: Use cheaper operations to replace expensive ones
+  - primitive vs boxed type, char vs varchar
+  - `indexOf` vs `split`
+  - prototype, clone
+  - CDN
+</script></section><section  data-markdown><script type="text/template">## Hardware and system software
+Align code with the hardware (CPU, RAM, SSD etc.) or system software
+  - CPU core vs thread number
+  - buffer size vs memory page block: `private static int DEFAULT_BUFFER_SIZE = 8192;`
+  - mysql UTF8 vs utf8mb4
+  - postgresql `returning`
+
+</script></section><section  data-markdown><script type="text/template">
+## Algorithms and data structure
+- Better algorithms and data structure for the problem
+  - time complexity
+  - [java collections time complexity](https://www.baeldung.com/java-collections-complexity)
+  - Threadsafe vs non-threadsafe: `HashTable` vs `HashMap`, `StringBuilder` vs `StringBuffer`
+</script></section><section  data-markdown><script type="text/template">
+
+## Performance model
+</script></section><section  data-markdown><script type="text/template">
+
+![](images/1644309625.965262.png)
+</script></section><section  data-markdown><script type="text/template">
+
+![](images/1645755048.327833.png)
+https://colin-scott.github.io/personal_website/research/interactive_latency.html
+</script></section><section  data-markdown><script type="text/template">
+- simple op: 1-10
+- method call: 15-100
+- alloc / dealloc / small obj: 200-500
+- thread: 2000 - 10000
+- local IO
+- network
+
+
+
+</script></section><section  data-markdown><script type="text/template">
+## Do things in parallel
+```
+ENGINES=("sonarlint" "hadolint" "shellcheck"  "eslint" "pylint" "flake8" "stylelint")
+
+for engine in ${ENGINES[@]};  do
+  node "${APP_FOLDER}/main.js"  "$engine" &
+done
+wait
+## merge json files into one
+jq -s '[.[][]] | sort_by(.location.path, .location.lines.begin)'  ${OUTPUT_FILE}-*.json > $OUTPUT_FILE
+
+```
+
+
+</script></section><section  data-markdown><script type="text/template">
+## Change time to happen
+
+- pre
+- postphone
+  - lazy load
+  - async
+  - MQ
+  - send + long polling
+- parrallel
+</script></section><section  data-markdown><script type="text/template">
+## Parallel
+Parallelize tasks when possible, as much as possible, and when it makes sense
+  - multiprocessing vs multithreading
+  - thread pool
+  - parallelStream
+</script></section><section  data-markdown><script type="text/template">
+## parallelism Benefit / limit
+Amdahl Law
+$$
+speedup = \frac{1}{ 1-P + \frac{P}{n}}
+$$
+</script></section><section  data-markdown><script type="text/template">## parallelism Benefit / limit
+
+![](images/AmdahlsLaw.svg.png)
+</script></section><section  data-markdown><script type="text/template">
+## parallelism Costs
+
+  - Splitting
+  - communication among tasks
+  - Synchronization / Merging
+  - Memory Locality
+  - Complexity
+</script></section><section  data-markdown><script type="text/template">
+## When to use parallelStream
+
+  parallelStream: NQ Model: N*Q > 10000
+  - N: the number of source data elements
+  - Q: amount of computation performed per data element
+</script></section><section  data-markdown><script type="text/template">
+## 80% real-world performance problems
+
+- remote service calling
+- database access
+- resource release
+- garbage collection
+- misconfiguration
+</script></section><section  data-markdown><script type="text/template">
+```java
+for (SelectionModel scopeSelection : scopeSelections) {
+ Map<String, Map<String, String>> codeTableForDropDown = specReportConfig.getCodeTable(); // This is to call a remote web service
+...
+}
+```
+</script></section><section  data-markdown><script type="text/template">
+```java
+Map<String, Map<String, String>> codeTableForDropDown = specReportConfig.getCodeTable(); // This is to call a remote web service
+for (SelectionModel scopeSelection : scopeSelections) {
+...
+
+}
+```
+</script></section><section  data-markdown><script type="text/template">```java
+
+if (!infoModels.isEmpty()) {
+    infoModels.stream().forEach(infoModel -> {
+        ...
+        infoModel.setLastChangeDate(DateTimeUtil.getGMTTimestamp());
+        supplementalInfoModelMapper.updateByPrimaryKey(infoModel);
+    });
+    updatedCount = infoModels.size();
+}
+```</script></section><section  data-markdown><script type="text/template">
+## Case study
+</script></section><section  data-markdown><script type="text/template">## baseline
+```java
+        Set<String> keys = map.keySet();
+        if(!keys.isEmpty()){
+            Set<String> userIDs = new HashSet<>();
+            for(String key : keys){
+                final String[] splitKey =  key.split("\\|");
+                String userID = splitKey.length == 2 ? splitKey[1] : null;
+                Long time = (map.get(key));
+                if (time < EXPIRATION_TIME) {
+                    userIDs.add(userID);
+                }
+            }
+            return userIDs;
+        }
+        return Collections.emptySet();
+```</script></section><section  data-markdown><script type="text/template">
+## Use entryset
+```java
+    public static Set<String> readMapWithEntry(Map<String, Long> map) {
+        Set<Map.Entry<String, Long>> entries = map.entrySet();
+        if(!entries.isEmpty()){
+            Set<String> userIDs = new HashSet<>();
+            for(Map.Entry<String, Long> entry : entries){
+                String key = entry.getKey();
+                final String[] splitKey = key.split("\\|");
+                String userID = splitKey.length == 2 ? splitKey[1] : null;
+                Long time = entry.getValue();
+                if (time < EXPIRATION_TIME) {
+                    userIDs.add(userID);
+                }
+            }
+            return userIDs;
+        }
+        return Collections.emptySet();
+    }
+```
+</script></section><section  data-markdown><script type="text/template">### Remove premature
+```java
+    public static Set<String> readMapWithoutPremature(Map<String, Long> map) {
+        Set<String> keys = map.keySet();
+        if(!keys.isEmpty()){
+            Set<String> userIDs = new HashSet<>();
+            for(String key : keys){
+                Long time = (map.get(key));
+                if (time < EXPIRATION_TIME) {
+                    final String[] splitKey =  key.split("\\|");
+                    String userID = splitKey.length == 2 ? splitKey[1] : null;
+                    userIDs.add(userID);
+                }
+            }
+            return userIDs;
+        }
+        return Collections.emptySet();
+    }
+```</script></section><section  data-markdown><script type="text/template">## Remove the usage of pattern
+```java
+    public static Set<String> readMapWithoutPattern(Map<String, Long> map) {
+        Set<String> keys = map.keySet();
+        if(!keys.isEmpty()){
+            Set<String> userIDs = new HashSet<>();
+            for(String key : keys){
+                int pos = key.indexOf('|');
+                String userID = pos >= 0 ? key.substring(pos + 1): null;
+                Long time = (map.get(key));
+                if (time < EXPIRATION_TIME) {
+                    userIDs.add(userID);
+                }
+            }
+            return userIDs;
+        }
+        return Collections.emptySet();
+    }
+```</script></section><section  data-markdown><script type="text/template">## Fix all issues
+```java
+public static Set<String> readMapWithAllOptimization(Map<String, Long> map) {
+        Set<Map.Entry<String, Long>> entries = map.entrySet();
+        if(!entries.isEmpty()){
+            Set<String> userIDs = new HashSet<>();
+
+            for(Map.Entry<String, Long> entry : entries) {
+                Long time = entry.getValue();
+                if (time < EXPIRATION_TIME) {
+                    String key = entry.getKey();
+                    int pos = key.indexOf('|');
+                    String userID = pos >= 0 ? key.substring(pos + 1): null;
+                    userIDs.add(userID);
+                }
+            }
+            return userIDs;
+        }
+        return Collections.emptySet();
+}
+```
+</script></section><section  data-markdown><script type="text/template">
+## parallelStream
+```java
+        Set<String> keys = map.keySet();
+        if(!keys.isEmpty()){
+            return map.entrySet().parallelStream()
+                    .filter(item -> item.getValue() < EXPIRATION_TIME)
+                    .map(item-> {
+                        String key = item.getKey();
+                        int pos = key.indexOf('|');
+                        return pos >= 0 ? key.substring(pos + 1): null;
+                    }).collect(Collectors.toSet());
+        }
+        return Collections.emptySet();
+```
+</script></section><section  data-markdown><script type="text/template">
+JDK 17, with 30K data
+```
+Benchmark                          Mode  Cnt        Score        Error  Units
+Test.readMap                       avgt   25  5222757.489 ±  45524.307  ns/op
+Test.readMapWithEntry              avgt   25  5133441.829 ±  74617.669  ns/op
+Test.readMapWithoutPattern         avgt   25  3131839.632 ± 147118.364  ns/op
+Test.readMapWithoutPremature       avgt   25  3718487.331 ± 201927.799  ns/op
+Test.readMapWithAllOptimization    avgt   25  2933536.110 ±  83468.581  ns/op
+Test.readMapWithStreaming          avgt   25  2951772.662 ± 138334.161  ns/op
+Test.readMapWithParallelStreaming  avgt   25  2737121.852 ± 137744.628  ns/op
+```</script></section><section  data-markdown><script type="text/template">
+Optimization |  Time (ns) | Improvement(%)
+---- | ------: | -----------:
+Use entrySet |  5133441.829 | 1.7
+Remove premature |  3718487.331  | 28.8
+Remove pattern |  3131839.632 | 40.0
+All | 2933536.11 |  43.8
+Streaming | 2951772.662 | 43.5
+ParallelStreaming | 2737121.852  | 47.6
+</script></section><section  data-markdown><script type="text/template">
+![benchmark](images/benchmark.png)
+
+
+</script></section><section  data-markdown><script type="text/template">
+
+## Conclusion
+- performance: optimize the outcome of unit resource;
+- different operations have different performance costs;
+- Performance optimization strategies: Reduce, replace, change time;
+- micro-benchmark with JHM provides good data support for optimization decisions;
+
+</script></section><section  data-markdown><script type="text/template">
+## Reference
+- microbenchmark
+  - https://www.baeldung.com/java-microbenchmark-harness
+  - http://tutorials.jenkov.com/java-performance/jmh.html
+
+- https://e2eml.school/code_optimization.html
+- https://www.infoq.com/articles/9_Fallacies_Java_Performance/
+- https://www.mikeash.com/pyblog/performance-comparisons-of-common-operations.html
+- on flame graph: https://queue.acm.org/detail.cfm?id=2927301
+- https://manikumarreddy.com/2013/05/07/the-art-of-java-application-performance-analysis-and-tuning-part-1/
+
+- https://www.baeldung.com/java-when-to-use-parallel-stream
+
+<style>
+.reveal img {max-height:90vh;}
+pre {
+    white-space: pre-wrap;       /* Since CSS 2.1 */
+    white-space: -moz-pre-wrap;  /* Mozilla, since 1999 */
+    white-space: -pre-wrap;      /* Opera 4-6 */
+    white-space: -o-pre-wrap;    /* Opera 7 */
+    word-wrap: break-word;       /* Internet Explorer 5.5+ */
+}
+</style></script></section></div>
+    </div>
+
+    <script src="./dist/reveal.js"></script>
+
+    <script src="./plugin/markdown/markdown.js"></script>
+    <script src="./plugin/highlight/highlight.js"></script>
+    <script src="./plugin/zoom/zoom.js"></script>
+    <script src="./plugin/notes/notes.js"></script>
+    <script src="./plugin/math/math.js"></script>
+    <script src="./plugin/mermaid/mermaid.min.js"></script>
+    <script src="./plugin/mermaid/reveal-mermaid.js"></script>
+    <script src="./plugin/mindmap/d3.min.js"></script>
+    <script src="./plugin/mindmap/markmap-view.js"></script>
+    <script src="./plugin/mindmap/markmap-lib.js"></script>
+    <script src="./plugin/mindmap/reveal-mindmap.js"></script>
+    <script>
+      function extend() {
+        var target = {};
+        for (var i = 0; i < arguments.length; i++) {
+          var source = arguments[i];
+          for (var key in source) {
+            if (source.hasOwnProperty(key)) {
+              target[key] = source[key];
+            }
+          }
+        }
+        return target;
+      }
+
+      // default options to init reveal.js
+      var defaultOptions = {
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+        transition: 'default', // none/fade/slide/convex/concave/zoom
+        plugins: [
+          RevealMarkdown,
+          RevealHighlight,
+          RevealZoom,
+          RevealNotes,
+          RevealMath
+        ]
+      };
+
+      // options from URL query string
+      var queryOptions = Reveal().getQueryHash() || {};
+
+      var options = extend(defaultOptions, {}, queryOptions);
+    </script>
+
+
+    <script>
+      Reveal.initialize(options);
+    </script>
+  </body>
+</html>
